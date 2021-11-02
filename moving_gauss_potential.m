@@ -1,5 +1,6 @@
-% Use imaginary time revolution to recognize the ground state of the
-% Schrodinger equation. TSSP method is employed to perform time revolution.
+% Starting from a bound state, slowly move the potential and study the
+% properties of the bound state, using TSSP method to perform the time
+% evolution.
 
 clear;
 tic;
