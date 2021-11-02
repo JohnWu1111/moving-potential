@@ -1,0 +1,94 @@
+% Use imaginary time revolution to recognize the ground state of the
+% Schrodinger equation. TSSP method is employed to perform time revolution.
+
+clear;
+tic;
+
+global sigma
+sigma = 0.05;
+% tol = 1e-11;
+v = 0.02;
+dt = 0.0005;
+dx = 0.01;
+T = 2;
+t = 0:dt:T;
+L = 10;
+x = -L:dx:L-dx;
+nt = length(t);
+nx = length(x);
+phi0 = zeros(nt,nx);
+V = zeros(nt,nx);
+area = zeros(nt,1);
+std_phi = zeros(nt,1);
+mean_phi = zeros(nt,1);
+
+fname = 'ground_state_sigma0.05_dt0.001_L10_dx0.01.mat';
+load(fname);
+phi0(1,:) = phi;
+std_phi(1) = std(x,abs(phi0(1,:)));
+mean_phi(1) = wmean(x,abs(phi0(1,:)),dx);
+
+miu = zeros(1,nx);
+pha2 = zeros(1,nx);
+for i = 1:nx
+    miu(i) = 2*pi*(-nx/2+i-1)/(2*L);
+    pha2(i) = exp(-1i*dt*miu(i)^2/2);
+end
+V(1,:) = f(x);
+
+for i = 2:nt
+    V(i,:) = f(x+v*t(i));
+    phi1 = exp(-1i*dt*f(x+v*(t(i)-dt))/2).*phi0(i-1,:);
+    phi1f = phi1*exp(-1i*(x'+L)*miu);
+    phi2 = pha2.*phi1f*exp(1i*miu'*(x+L))/nx;
+    
+    phi0(i,:) = exp(-1i*dt*f(x+v*(t(i)-dt/2))/2).*phi2;
+    temp = abs(phi0(i,:));
+    area(i) = sum(temp.^2)*dx;
+    mean_phi(i) = wmean(x-v*t(i),abs(phi0(i,:)),dx);
+    std_phi(i) = std(x-mean_phi(i),abs(phi0(i,:)));
+%     phi0(i,:) = phi0(i,:)./sqrt(s*dx);
+end
+phi00 = abs(phi0);
+% std_phi = sqrt(var_phi);
+toc;
+
+fname = ['result_sigma',num2str(sigma),'_dt',num2str(dt),'_T',num2str(T),'_L',num2str(L),'_dx',num2str(dx),'_v',num2str(v),'.mat'];
+save(fname,'phi00','std_phi','mean_phi','-v7.3');
+
+figure;
+plot(x,phi00(1,:));
+hold on
+plot(x,phi00(end,:));
+% figure;
+% imagesc(phi00)
+% figure;
+% imagesc(V);
+% figure;
+% plot(t,var_phi);
+figure;
+plot(t,std_phi);
+
+
+function y = f(x)
+    global sigma;
+    y = -exp(-(x/sigma).^2/2)/(sqrt(2*pi)*sigma);
+end
+
+function y = var1(phi,x)
+    y = 0;
+    len = length(x);
+    for i = 1:len
+        y = y + x(i)^2*phi(i);
+    end
+    y = y/len;
+end
+
+function y = wmean(x,phi,dx)
+    y = 0;
+    len = length(x);
+    for i = 1:len
+        y = y + x(i)*phi(i);
+    end
+    y = y*dx;
+end
