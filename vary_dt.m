@@ -1,6 +1,6 @@
 % Starting from a bound state, slowly move the potential and study the
 % properties of the bound state, using TSSP method to perform the time
-% evolution.
+% evolution, varying the parameter dt.
 
 clear;
 tic;
@@ -9,8 +9,8 @@ global sigma
 sigma = 0.05;
 % tol = 1e-11;
 v = 0.05;
-dt = [0.005 0.001 0.0005 0.0002];
-dx = 0.01;
+dt = [0.001 0.0005 0.0002 0.0001];
+dx = 0.005;
 T = 0.45;
 L = 10;
 x = -L:dx:L-dx;
@@ -22,7 +22,7 @@ area = zeros(nt,ndt);
 std_phi = zeros(nt,ndt);
 mean_phi = zeros(nt,ndt);
 
-fname = 'ground_state_sigma0.05_dt0.001_L10_dx0.01.mat';
+fname = 'ground_state_sigma0.05_dt0.0005_L10_dx0.005_tol1e-08.mat';
 load(fname);
 
 figure;
