@@ -6,12 +6,12 @@ tic;
 
 global sigma
 sigma = 0.05;
-tol = 1e-7;
+tol = 1e-9;
 ep = 1;
-dt = 0.001;
-dx = 0.01;
+dt = 0.0005;
+dx = 0.005;
 t0 = 0:dt:100;
-L = 10;
+L = 20;
 x = -L:dx:L-dx;
 nt0 = length(t0);
 nx = length(x);
@@ -40,6 +40,7 @@ i = 2;
 i = gpuArray(i);
 nt0 = gpuArray(nt0);
 while i <= nt0
+    comp = phi0(nx/2);
     phi1 = pha1.*phi0;
     phi1f = phi1*cos((x'+L)*miu);
     phi2 = pha2.*phi1f*cos(miu'*(x+L));
@@ -50,7 +51,7 @@ while i <= nt0
     temp = temp./sqrt(s*dx);
     phi0 = temp; 
     
-    if abs(abs(phi0(i,nx/2)) - abs(phi0(i-1,nx/2))) < tol
+    if abs(abs(phi0(nx/2)) - comp) < tol
         count = i;
         break;
     end
@@ -60,13 +61,12 @@ end
 nt0
 count
 
-phi00 = abs(phi0);
-phi = phi00(count,:);
+phi = abs(phi0);
 
 phi = gather(phi);
 x = gather(x);
-% fname = ['ground_state_sigma',num2str(sigma),'_dt',num2str(dt),'_L',num2str(L),'_dx',num2str(dx),'_tol',num2str(tol),'.mat'];
-% save(fname,'phi','-v7.3');
+fname = ['ground_state_sigma',num2str(sigma),'_dt',num2str(dt),'_L',num2str(L),'_dx',num2str(dx),'_tol',num2str(tol),'.mat'];
+save(fname,'phi','-v7.3');
 
 %figure;
 %plot(x,phi);
