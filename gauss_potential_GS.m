@@ -6,11 +6,11 @@ tic;
 
 global sigma
 sigma = 0.05;
-tol = 1e-11;
+tol = 1e-7;
 ep = 1;
 dt = 0.001;
 dx = 0.01;
-t0 = 0:dt:50;
+t0 = 0:dt:100;
 L = 10;
 x = -L:dx:L-dx;
 nt0 = length(t0);
@@ -37,23 +37,27 @@ for i = 2:nt0
     s = sum(temp.^2);
     phi0(i,:) = phi0(i,:)./sqrt(s*dx);
     
-    if abs(abs(phi0(i,1)) - abs(phi0(i-1,1))) < tol
+    if abs(abs(phi0(i,nx/2)) - abs(phi0(i-1,nx/2))) < tol
         count = i;
         break;
     end
 end
+
+nt0
+count
+
 phi00 = abs(phi0);
 phi = phi00(count,:);
-fname = ['ground_state_sigma',num2str(sigma),'_dt',num2str(dt),'.mat'];
-save(fname,'phi','-v7.3');
+% fname = ['ground_state_sigma',num2str(sigma),'_dt',num2str(dt),'_L',num2str(L),'_dx',num2str(dx),'_tol',num2str(tol),'.mat'];
+% save(fname,'phi','-v7.3');
 
-figure;
-plot(x,phi);
-hold on
-plot(x,f0(x));
+%figure;
+%plot(x,phi);
+%hold on
+%plot(x,f0(x));
 
-fname = ['ground_state_sigma',num2str(sigma),'_dt',num2str(dt),'.png'];
-saveas(gcf, fname)
+%fname = ['ground_state_sigma',num2str(sigma),'_dt',num2str(dt),'.png'];
+%saveas(gcf, fname)
 
 toc;
 
