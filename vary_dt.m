@@ -50,18 +50,14 @@ for n = 1:ndt
         phi0(i,:) = exp(-1i*dt(n)*f(x+v*(t(i)-dt(n)/2))/2).*phi2;
         temp = abs(phi0(i,:));
         area(i,n) = sum(temp.^2)*dx;
-        mean_phi(i,n) = wmean(x-v*t(i),abs(phi0(i,:)),dx);
+        mean_phi(i,n) = wmean(x,abs(phi0(i,:)),dx);
         std_phi(i,n) = std(x-mean_phi(i,n),abs(phi0(i,:)));
     end
-%     phi00 = abs(phi0);
     plot(t,std_phi(1:nt,n));
     hold on
 end
 
 toc;
-
-% fname = ['result_sigma',num2str(sigma),'_dt',num2str(dt),'_T',num2str(T),'_L',num2str(L),'_dx',num2str(dx),'_v',num2str(v),'.mat'];
-% save(fname,'phi00','std_phi','mean_phi','-v7.3');
 
 function y = f(x)
     global sigma;
