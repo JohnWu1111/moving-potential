@@ -34,20 +34,24 @@ for i = 1:nx
     miu(i) = 2*pi*(-nx/2+i-1)/(2*L);
     pha2(i) = exp(-1i*dt*miu(i)^2/2);
 end
+coeff = (-1).^(0:(nx-1));
 % V(1,:) = f(x);
 
 x = gpuArray(x);
 t = gpuArray(t);
 miu = gpuArray(miu);
 pha2 = gpuArray(pha2);
+coeff = gpuArray(coeff);
 mean_phi = gpuArray(mean_phi);
 std_phi = gpuArray(std_phi);
 
 for i = 2:nt
 %     V(i,:) = f(x+v*t(i));
     phi1 = exp(1i*dt*(exp(-((x+v*(t(i)-dt))/sigma).^2/2)/(sqrt(2*pi)*sigma))/2).*phi0;
-    phi1f = phi1*exp(-1i*(x'+L)*miu);
-    phi2 = pha2.*phi1f*exp(1i*miu'*(x+L))/nx;
+%     phi1f = phi1*exp(-1i*(x'+L)*miu);
+%     phi2 = pha2.*phi1f*exp(1i*miu'*(x+L))/nx;
+    phi1f = fft(coeff.*phi1);
+    phi2 = coeff.*ifft(pha2.*phi1f);
     
     phi0 = exp(1i*dt*(exp(-((x+v*(t(i)-dt/2))/sigma).^2/2)/(sqrt(2*pi)*sigma))/2).*phi2;
     temp = abs(phi0);

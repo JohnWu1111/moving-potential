@@ -8,10 +8,10 @@ tic;
 global sigma
 sigma = 0.05;
 % tol = 1e-11;
-v = 0.02;
-dt = 0.0005;
-dx = 0.01;
-T = 2;
+v = 0.05;
+dt = 0.0002;
+dx = 0.005;
+T = 0.1;
 t = 0:dt:T;
 L = 10;
 x = -L:dx:L-dx;
@@ -23,7 +23,7 @@ area = zeros(nt,1);
 std_phi = zeros(nt,1);
 mean_phi = zeros(nt,1);
 
-fname = 'ground_state_sigma0.05_dt0.001_L10_dx0.01.mat';
+fname = 'ground_state_sigma0.05_dt0.0005_L10_dx0.005_tol1e-08.mat';
 load(fname);
 phi0(1,:) = phi;
 std_phi(1) = std(x,abs(phi0(1,:)));
@@ -40,13 +40,15 @@ V(1,:) = f(x);
 for i = 2:nt
     V(i,:) = f(x+v*t(i));
     phi1 = exp(-1i*dt*f(x+v*(t(i)-dt))/2).*phi0(i-1,:);
-    phi1f = phi1*exp(-1i*(x'+L)*miu);
-    phi2 = pha2.*phi1f*exp(1i*miu'*(x+L))/nx;
+%     phi1f = phi1*exp(-1i*(x'+L)*miu);
+%     phi2 = pha2.*phi1f*exp(1i*miu'*(x+L))/nx;
+    phi1f = nufft(phi1,x+L,miu/(2*pi));
+    phi2 = nufft(pha2.*phi1f,-miu/(2*pi),x+L)/nx;    
     
     phi0(i,:) = exp(-1i*dt*f(x+v*(t(i)-dt/2))/2).*phi2;
     temp = abs(phi0(i,:));
     area(i) = sum(temp.^2)*dx;
-    mean_phi(i) = wmean(x-v*t(i),abs(phi0(i,:)),dx);
+    mean_phi(i) = wmean(x,abs(phi0(i,:)),dx);
     std_phi(i) = std(x-mean_phi(i),abs(phi0(i,:)));
 %     phi0(i,:) = phi0(i,:)./sqrt(s*dx);
 end
@@ -57,10 +59,10 @@ toc;
 fname = ['result_sigma',num2str(sigma),'_dt',num2str(dt),'_T',num2str(T),'_L',num2str(L),'_dx',num2str(dx),'_v',num2str(v),'.mat'];
 save(fname,'phi00','std_phi','mean_phi','-v7.3');
 
-figure;
-plot(x,phi00(1,:));
-hold on
-plot(x,phi00(end,:));
+% figure;
+% plot(x,phi00(1,:));
+% hold on
+% plot(x,phi00(end,:));
 % figure;
 % imagesc(phi00)
 % figure;
