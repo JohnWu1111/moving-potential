@@ -29,8 +29,10 @@ end
 
 for i = 2:nt0
     phi1 = pha1.*phi0(i-1,:);
-    phi1f = phi1*cos((x'+L)*miu);
-    phi2 = pha2.*phi1f*cos(miu'*(x+L));
+%     phi1f = phi1*cos((x'+L)*miu);
+%     phi2 = pha2.*phi1f*cos(miu'*(x+L));
+    phi1f = nufft(phi1,x+L,miu/(2*pi));
+    phi2 = nufft(pha2.*phi1f,-miu/(2*pi),x+L)/nx;  
     
     phi0(i,:) = pha1.*phi2;
     temp = abs(phi0(i,:));

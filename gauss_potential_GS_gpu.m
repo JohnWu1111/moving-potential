@@ -29,10 +29,12 @@ for i = 1:nx
     miu(i) = 2*pi*(-nx/2+i-1)/(2*L);
     pha2(i) = exp(-dt*miu(i)^2*ep/2);
 end
+coeff = (-1).^(0:(nx-1));
 
 pha1 = gpuArray(pha1);
 miu = gpuArray(miu);
 pha2 = gpuArray(pha2);
+coeff = gpuArray(coeff);
 tol = gpuArray(tol);
 dx = gpuArray(dx);
 
@@ -42,8 +44,10 @@ nt0 = gpuArray(nt0);
 while i <= nt0
     comp = phi0(nx/2);
     phi1 = pha1.*phi0;
-    phi1f = phi1*cos((x'+L)*miu);
-    phi2 = pha2.*phi1f*cos(miu'*(x+L));
+%     phi1f = phi1*cos((x'+L)*miu);
+%     phi2 = pha2.*phi1f*cos(miu'*(x+L));
+    phi1f = fft(coeff.*phi1);
+    phi2 = coeff.*ifft(pha2.*phi1f);
     
     temp = pha1.*phi2;
     temp1 = abs(temp);

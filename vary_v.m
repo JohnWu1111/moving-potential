@@ -39,8 +39,10 @@ figure;
 for n = 1:length(v)
     for i = 2:nt
         phi1 = exp(-1i*dt*f(x+v(n)*(t(i)-dt))/2).*phi0(i-1,:);
-        phi1f = phi1*exp(-1i*(x'+L)*miu);
-        phi2 = pha2.*phi1f*exp(1i*miu'*(x+L))/nx;
+%         phi1f = phi1*exp(-1i*(x'+L)*miu);
+%         phi2 = pha2.*phi1f*exp(1i*miu'*(x+L))/nx;
+        phi1f = nufft(phi1,x+L,miu/(2*pi));
+        phi2 = nufft(pha2.*phi1f,-miu/(2*pi),x+L)/nx;    
         
         phi0(i,:) = exp(-1i*dt*f(x+v(n)*(t(i)-dt/2))/2).*phi2;
         temp = abs(phi0(i,:));

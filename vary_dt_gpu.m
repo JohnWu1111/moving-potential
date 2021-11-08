@@ -24,6 +24,9 @@ mean_phi = zeros(nt,ndt);
 fname = 'ground_state_sigma0.05_dt0.0005_L10_dx0.005_tol1e-08.mat';
 load(fname);
 
+coeff = (-1).^(0:(nx-1));
+coeff = gpuArray(coeff);
+
 x = gpuArray(x);
 dt = gpuArray(dt);
 miu = zeros(1,nx);
@@ -51,8 +54,10 @@ for n = 1:ndt
     
     for i = 2:nt
         phi1 = exp(-1i*dt(n)*f(x+v*(t(i)-dt(n)))/2).*phi0;
-        phi1f = phi1*exp(-1i*(x'+L)*miu);
-        phi2 = pha2.*phi1f*exp(1i*miu'*(x+L))/nx;
+%         phi1f = phi1*exp(-1i*(x'+L)*miu);
+%         phi2 = pha2.*phi1f*exp(1i*miu'*(x+L))/nx;
+        phi1f = fft(coeff.*phi1);
+        phi2 = coeff.*ifft(pha2.*phi1f);
         
         phi0 = exp(-1i*dt(n)*f(x+v*(t(i)-dt(n)/2))/2).*phi2;
         temp = abs(phi0);
