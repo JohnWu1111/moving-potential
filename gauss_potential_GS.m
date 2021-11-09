@@ -6,12 +6,12 @@ tic;
 
 global sigma
 sigma = 0.05;
-tol = 1e-7;
+tol = 1e-9;
 ep = 1;
-dt = 0.001;
-dx = 0.01;
+dt = 0.0005;
+dx = 0.005;
 t0 = 0:dt:100;
-L = 10;
+L = 20;
 x = -L:dx:L-dx;
 nt0 = length(t0);
 nx = length(x);
@@ -53,8 +53,8 @@ phi = phi00(count,:);
 % fname = ['ground_state_sigma',num2str(sigma),'_dt',num2str(dt),'_L',num2str(L),'_dx',num2str(dx),'_tol',num2str(tol),'.mat'];
 % save(fname,'phi','-v7.3');
 
-%figure;
-%plot(x,phi);
+figure;
+plot(x,phi);
 %hold on
 %plot(x,f0(x));
 

@@ -9,9 +9,10 @@ global sigma
 sigma = 0.05;
 % tol = 1e-11;
 v = 0.05;
-dt = [0.001 0.0005 0.0002 0.0001];
+% dt = [0.001 0.0005 0.0002 0.0001];
+dt = [0.001 0.0005];
 dx = 0.005;
-T = 0.45;
+T = 10;
 L = 10;
 x = -L:dx:L-dx;
 nx = length(x);
@@ -53,16 +54,16 @@ for n = 1:ndt
     end
     
     for i = 2:nt
-        phi1 = exp(-1i*dt(n)*f(x+v*(t(i)-dt(n)))/2).*phi0;
+        phi1 = exp(1i*dt(n)*(exp(-((x+v*(t(i)-dt(n)))/sigma).^2/2)/(sqrt(2*pi)*sigma))/2).*phi0;
 %         phi1f = phi1*exp(-1i*(x'+L)*miu);
 %         phi2 = pha2.*phi1f*exp(1i*miu'*(x+L))/nx;
         phi1f = fft(coeff.*phi1);
         phi2 = coeff.*ifft(pha2.*phi1f);
         
-        phi0 = exp(-1i*dt(n)*f(x+v*(t(i)-dt(n)/2))/2).*phi2;
+        phi0 = exp(1i*dt(n)*(exp(-((x+v*(t(i)-dt(n)/2))/sigma).^2/2)/(sqrt(2*pi)*sigma))/2).*phi2;
         temp = abs(phi0);
 %         mean_phi(i,n) = wmean(x,abs(phi0),dx);
-        mean_phi(i,n) = x*temp'*dx;
+        mean_phi(i,n) = x*temp.^2'*dx;
         std_phi(i,n) = std(x-mean_phi(i,n),temp);
     end
 

@@ -52,7 +52,7 @@ for n = 1:ndt
         phi0(i,:) = exp(-1i*dt(n)*f(x+v*(t(i)-dt(n)/2))/2).*phi2;
         temp = abs(phi0(i,:));
         area(i,n) = sum(temp.^2)*dx;
-        mean_phi(i,n) = wmean(x,abs(phi0(i,:)),dx);
+        mean_phi(i,n) = wmean(x,abs(phi0(i,:).^2),dx);
         std_phi(i,n) = std(x-mean_phi(i,n),abs(phi0(i,:)));
     end
     plot(t,std_phi(1:nt,n));

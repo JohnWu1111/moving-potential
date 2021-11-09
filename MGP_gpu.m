@@ -8,12 +8,12 @@ tic;
 global sigma
 sigma = 0.05;
 % tol = 1e-11;
-v = 0.05;
-dt = 0.0002;
+v = 0.001;
+dt = 0.001;
 dx = 0.005;
-T = 0.45;
+T = 10;
 t = 0:dt:T;
-L = 10;
+L = 30;
 x = -L:dx:L-dx;
 nt = length(t);
 nx = length(x);
@@ -22,7 +22,7 @@ area = zeros(nt,1);
 std_phi = zeros(nt,1);
 mean_phi = zeros(nt,1);
 
-fname = 'ground_state_sigma0.05_dt0.0005_L10_dx0.005_tol1e-08.mat';
+fname = 'ground_state_sigma0.05_dt0.0005_L30_dx0.005_tol1e-09.mat';
 load(fname);
 phi0 = phi;
 std_phi(1) = std(x,abs(phi0));
@@ -55,9 +55,9 @@ for i = 2:nt
     
     phi0 = exp(1i*dt*(exp(-((x+v*(t(i)-dt/2))/sigma).^2/2)/(sqrt(2*pi)*sigma))/2).*phi2;
     temp = abs(phi0);
-    area(i) = sum(temp.^2)*dx;
-    mean_phi(i) = x*temp'*dx;
-    std_phi(i) = std(x-mean_phi(i),temp);
+%     area(i) = sum(temp.^2)*dx;
+    mean_phi(i) = x*temp.^2'*dx;
+%     std_phi(i) = std(x-mean_phi(i),temp);
 %     phi0(i,:) = phi0(i,:)./sqrt(s*dx);
 end
 
@@ -81,8 +81,15 @@ toc;
 % imagesc(V);
 % figure;
 % plot(t,var_phi);
+% figure;
+% plot(t,std_phi);
 figure;
-plot(t,std_phi);
+plot(t,mean_phi);
+hold on 
+plot(t,-v*t);
+legend('wave function','potential')
+xlabel('t')
+ylabel('x')
 
 
 function y = f(x)
