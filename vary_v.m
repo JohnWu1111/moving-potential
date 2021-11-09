@@ -8,19 +8,19 @@ tic;
 global sigma
 sigma = 0.05;
 % tol = 1e-11;
-v = [0.2 0.1 0.05];
+v = [0.01 0.005 0.001];
 dt = 0.001;
 dx = 0.005;
-T = 2;
+T = 10;
 t = 0:dt:T;
-L = 10;
+L = 30;
 x = -L:dx:L-dx;
 nt = length(t);
 nx = length(x);
 std_phi = zeros(nt,1);
 mean_phi = zeros(nt,1);
 
-fname = 'ground_state_sigma0.05_dt0.0005_L10_dx0.005_tol1e-08.mat';
+fname = 'ground_state_sigma0.05_dt0.0005_L30_dx0.005_tol1e-09.mat';
 load(fname);
 
 miu = zeros(1,nx);
@@ -44,8 +44,8 @@ for n = 1:length(v)
     t = gpuArray(t);
     phi0 = gpuArray(phi);
     std_phi = gpuArray(std_phi);
-    std_phi(1) = std(x,abs(phi0));
-    mean_phi(1) = wmean(x,abs(phi0),dx);
+    std_phi(1) = std(x,abs(phi0).^2);
+    mean_phi(1) = wmean(x,abs(phi0).^2,dx);
     
     for i = 2:nt
         phi1 = exp(1i*dt*(exp(-((x+v(n)*(t(i)-dt))/sigma).^2/2)/(sqrt(2*pi)*sigma))/2).*phi0;
@@ -55,8 +55,8 @@ for n = 1:length(v)
         phi2 = coeff.*ifft(pha2.*phi1f);   
         
         phi0 = exp(1i*dt*(exp(-((x+v(n)*(t(i)-dt/2))/sigma).^2/2)/(sqrt(2*pi)*sigma))/2).*phi2;
-        temp = abs(phi0);
-        mean_phi(i) = x*temp.^2'*dx;
+        temp = abs(phi0).^2;
+        mean_phi(i) = x*temp'*dx;
         std_phi(i) = std(x-mean_phi(i),temp);
     end
     

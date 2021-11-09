@@ -44,9 +44,9 @@ for n = 1:ndt
     std_phi = gpuArray(std_phi);
     phi0 = gpuArray(phi);
 
-    std_phi(1,n) = std(x,abs(phi0));
+    std_phi(1,n) = std(x,abs(phi0).^2);
 %     mean_phi(1,n) = wmean(x,abs(phi0),dx); 
-    mean_phi(1,n) = x*abs(phi0)'*dx;
+    mean_phi(1,n) = x*abs(phi0).^2'*dx;
     
     for i = 1:nx
         miu(i) = 2*pi*(-nx/2+i-1)/(2*L);
@@ -61,9 +61,9 @@ for n = 1:ndt
         phi2 = coeff.*ifft(pha2.*phi1f);
         
         phi0 = exp(1i*dt(n)*(exp(-((x+v*(t(i)-dt(n)/2))/sigma).^2/2)/(sqrt(2*pi)*sigma))/2).*phi2;
-        temp = abs(phi0);
+        temp = abs(phi0).^2;
 %         mean_phi(i,n) = wmean(x,abs(phi0),dx);
-        mean_phi(i,n) = x*temp.^2'*dx;
+        mean_phi(i,n) = x*temp'*dx;
         std_phi(i,n) = std(x-mean_phi(i,n),temp);
     end
 

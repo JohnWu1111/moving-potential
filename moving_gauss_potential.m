@@ -26,8 +26,8 @@ mean_phi = zeros(nt,1);
 fname = 'ground_state_sigma0.05_dt0.0005_L10_dx0.005_tol1e-08.mat';
 load(fname);
 phi0(1,:) = phi;
-std_phi(1) = std(x,abs(phi0(1,:)));
-mean_phi(1) = wmean(x,abs(phi0(1,:)),dx);
+std_phi(1) = std(x,abs(phi0(1,:)).^2);
+mean_phi(1) = wmean(x,abs(phi0(1,:).^2),dx);
 
 miu = zeros(1,nx);
 pha2 = zeros(1,nx);
@@ -48,7 +48,7 @@ for i = 2:nt
     phi0(i,:) = exp(-1i*dt*f(x+v*(t(i)-dt/2))/2).*phi2;
     temp = abs(phi0(i,:));
     area(i) = sum(temp.^2)*dx;
-    mean_phi(i) = wmean(x,abs(phi0(i,:)),dx);
+    mean_phi(i) = wmean(x,abs(phi0(i,:).^2),dx);
     std_phi(i) = std(x-mean_phi(i),abs(phi0(i,:)));
 %     phi0(i,:) = phi0(i,:)./sqrt(s*dx);
 end
