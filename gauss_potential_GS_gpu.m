@@ -8,10 +8,10 @@ global sigma
 sigma = 0.05;
 tol = 1e-9;
 ep = 1;
-dt = 0.0005;
+dt = 0.0002;
 dx = 0.005;
 t0 = 0:dt:100;
-L = 30;
+L = 50;
 x = -L:dx:L-dx;
 nt0 = length(t0);
 nx = length(x);
