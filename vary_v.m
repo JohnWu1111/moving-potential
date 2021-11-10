@@ -8,19 +8,19 @@ tic;
 global sigma
 sigma = 0.05;
 % tol = 1e-11;
-v = [0.01 0.005 0.001];
-dt = 0.001;
+v = [0.04 0.02 0.01 0.005];
+dt = 0.002;
 dx = 0.005;
-T = 10;
+T = 100;
 t = 0:dt:T;
-L = 30;
+L = 100;
 x = -L:dx:L-dx;
 nt = length(t);
 nx = length(x);
 std_phi = zeros(nt,1);
 mean_phi = zeros(nt,1);
 
-fname = 'ground_state_sigma0.05_dt0.0005_L30_dx0.005_tol1e-09.mat';
+fname = 'ground_state_sigma0.05_dt0.0005_L100_dx0.005_tol1e-09.mat';
 load(fname);
 
 miu = zeros(1,nx);
@@ -59,11 +59,15 @@ for n = 1:length(v)
         mean_phi(i) = x*temp'*dx;
         std_phi(i) = std(x-mean_phi(i),temp);
     end
-    
+    diff = mean_phi + v(n)*t';
     t = gather(t);
     std_phi = gather(std_phi);
+    diff = gather(diff);
     
-    plot(t,std_phi);
+    fname = ['diff\diff_sigma',num2str(sigma),'_dt',num2str(dt),'_T',num2str(T),'_L',num2str(L),'_dx',num2str(dx),'_v',num2str(v(n)),'.mat'];
+    save(fname','diff','-v7.3');
+    
+    plot(t,diff);
     hold on
 end
 % std_phi = sqrt(var_phi);

@@ -9,11 +9,12 @@ global sigma
 sigma = 0.05;
 % tol = 1e-11;
 v = 0.05;
-% dt = [0.001 0.0005 0.0002 0.0001];
-dt = [0.001 0.0005];
+% dt = [0.01 0.005 0.002];
+dt = [0.002 0.001 0.0005];
+% dt = [0.001 0.0005];
 dx = 0.005;
-T = 10;
-L = 10;
+T = 30;
+L = 50;
 x = -L:dx:L-dx;
 nx = length(x);
 ndt = length(dt);
@@ -22,7 +23,7 @@ nt = length(t);
 std_phi = zeros(nt,ndt);
 mean_phi = zeros(nt,ndt);
 
-fname = 'ground_state_sigma0.05_dt0.0005_L10_dx0.005_tol1e-08.mat';
+fname = 'ground_state_sigma0.05_dt0.0005_L50_dx0.005_tol1e-09.mat';
 load(fname);
 
 coeff = (-1).^(0:(nx-1));
@@ -64,12 +65,15 @@ for n = 1:ndt
         temp = abs(phi0).^2;
 %         mean_phi(i,n) = wmean(x,abs(phi0),dx);
         mean_phi(i,n) = x*temp'*dx;
-        std_phi(i,n) = std(x-mean_phi(i,n),temp);
+%         std_phi(i,n) = std(x-mean_phi(i,n),temp);
     end
 
+    diff = mean_phi(1:nt,n) + v*t';
     t = gather(t);
-    std_phi = gather(std_phi);
-    plot(t,std_phi(1:nt,n));
+%     std_phi = gather(std_phi);
+    diff = gather(diff);
+%     plot(t,std_phi(1:nt,n));
+    plot(t,diff);
     hold on
 end
 
